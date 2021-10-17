@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'product.dart';
+//comment 1: after created account in Google Firebase add http package and set it as test database
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -49,42 +52,56 @@ class Products with ChangeNotifier {
   }
 
   void addProducts(Product product) {
-    final newProduct = Product(
-        id: DateTime.now().toString(),
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageUrl: product.imageUrl);
-    //comment 1 : for add new created product can use insert or add methods but different between these methods
-    // is if use Insert() add new product in top of list
-    //but if use Add() add new product to Following list
-    _items.insert(0, newProduct);
-    notifyListeners();
+    //comment 2 : for add new product to Firebase first define a variable to save  database url in items
+
+    final url = Uri.https(
+      //comment 3 : use Uri.https and paste url here without https and for second parameters add json file name like here i choose /products.json
+        'shopapp-82387-default-rtdb.asia-southeast1.firebasedatabase.app', '/products.json');
+//comment 4 : for pass data or add new data to database use .post() get 2 parameters at this time
+// first argument: our url 
+//second argument: is body , body say add your json inside me with all parameters
+//for do this import dart:convert for use encode
+//json.encode({}): convert all products parameters as json data for pass this data to the database
+    http
+        .post(
+      url,
+      body: json.encode(
+        {
+          "title": product.title,
+          "price": product.price,
+          "description": product.description,
+          "imageUrl": product.imageUrl,
+          "isFavorite": product.isFavorite,
+        },
+      ),
+      
+    )
+    //comment 5 :.then() : use this method for when we want to show changes with some delay
+    // here after complate all fields of new product and save it till it is uploading on data base and save there
+        .then(
+      (response) {
+        final newProduct = Product(
+          //comment 6 : in database when add new product firebase generate new id and use it here as unique id
+            id: json.decode(response.body)['name'],
+            title: product.title,
+            description: product.description,
+            price: product.price,
+            imageUrl: product.imageUrl);
+
+        _items.insert(0, newProduct);
+        notifyListeners();
+      },
+    );
   }
 
-  //comment 2 : must important function is this function for make editable all products that will be added or was in our list
-  //comment 3 : first define parameters for function need ID of product and pass data of product we resivied in EditProductScreen
-  // as second parameter
   void updateProduct(String id, Product newProduct) {
-    //comment 4 : at the first use .indexWhere() for find specific product that has an unique id and we created it time ago
-    // here we call this product again by define a variable like prodIndex
-    // return value of items.indexWhere((prod) => prod.id == id) is a place of product in list product array for example: maybe that product has a unique id : 'p2' and the place of this id is [1]
-    // we save the product place number in product list array or(_items) in prodIndex
     final proIndex = items.indexWhere((prod) => prod.id == id);
-    //comment 5 : then create an if statement Which it determines(معین میکند)if there was a product with place number in product list array or(_items)
 
     if (proIndex >= 0) {
-      // instead new data or edited previous product data to current product data and
-      //How?
-      // pass product number place like this : _items[prodIndex]
-      // and replace old data of this product with new data
-      // when define _items[prodIndex]=newProduct
       _items[proIndex] = newProduct;
       print(proIndex);
       notifyListeners();
-    }
-    //comment 6 : otherwise do nothing
-    else {
+    } else {
       print('...');
     }
   }
