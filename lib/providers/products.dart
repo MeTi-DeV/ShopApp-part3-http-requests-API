@@ -51,18 +51,12 @@ class Products with ChangeNotifier {
     return _items.where((productItem) => productItem.isFavorite).toList();
   }
 
-  void addProducts(Product product) {
-    //comment 2 : for add new product to Firebase first define a variable to save  database url in items
+Future<void> addProducts(Product product) {
 
     final url = Uri.https(
-      //comment 3 : use Uri.https and paste url here without https and for second parameters add json file name like here i choose /products.json
         'shopapp-82387-default-rtdb.asia-southeast1.firebasedatabase.app', '/products.json');
-//comment 4 : for pass data or add new data to database use .post() get 2 parameters at this time
-// first argument: our url 
-//second argument: is body , body say add your json inside me with all parameters
-//for do this import dart:convert for use encode
-//json.encode({}): convert all products parameters as json data for pass this data to the database
-    http
+
+  return  http
         .post(
       url,
       body: json.encode(
@@ -76,12 +70,10 @@ class Products with ChangeNotifier {
       ),
       
     )
-    //comment 5 :.then() : use this method for when we want to show changes with some delay
-    // here after complate all fields of new product and save it till it is uploading on data base and save there
+
         .then(
       (response) {
         final newProduct = Product(
-          //comment 6 : in database when add new product firebase generate new id and use it here as unique id
             id: json.decode(response.body)['name'],
             title: product.title,
             description: product.description,

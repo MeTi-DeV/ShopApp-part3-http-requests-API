@@ -12,9 +12,9 @@ class EditProductScreen extends StatefulWidget {
 
 class _EditProductScreenState extends State<EditProductScreen> {
   final _imageUrlController = TextEditingController();
- 
+
   final _imageUrlFocusNode = FocusNode();
-  
+
   final _form = GlobalKey<FormState>();
 
   var _editProduct = Product(
@@ -30,20 +30,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
     'price': '',
     'imageUrl': '',
   };
+  var _isLoading = false;
   var _isInstate = true;
   @override
-  
   void initState() {
     _imageUrlController.addListener(_updateImageUrl);
     super.initState();
   }
 
   @override
-  
   void dispose() {
     _imageUrlController.removeListener(_updateImageUrl);
     _imageUrlController.dispose();
-   
+
     _imageUrlFocusNode.dispose();
     super.dispose();
   }
@@ -55,11 +54,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   @override
-
-
   void didChangeDependencies() {
     if (_isInstate) {
-      
       final productId = ModalRoute.of(context)!.settings.arguments == null
           ? "NULL"
           : ModalRoute.of(context)!.settings.arguments as String;
@@ -86,15 +82,22 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
 
     _form.currentState!.save();
-
+    setState(() {
+      _isLoading = true;
+    });
     if (_editProduct.id != '') {
+      setState(() {
+        _isLoading = false;
+      });
       Provider.of<Products>(context, listen: false)
           .updateProduct(_editProduct.id, _editProduct);
-     
     } else {
-      Provider.of<Products>(context, listen: false).addProducts(_editProduct);
+      Provider.of<Products>(context, listen: false)
+          .addProducts(_editProduct)
+          .then((_) {
+        Navigator.of(context).pop();
+      });
     }
-    Navigator.of(context).pop();
   }
 
   Widget build(BuildContext context) {
@@ -103,7 +106,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         actions: [IconButton(onPressed: _saveForm, icon: Icon(Icons.save))],
         title: Text('Edit Product'),
       ),
-      body: Form(
+      body: _isLoading ?Center(child: CircularProgressIndicator(color: Colors.cyanAccent,),) :Form(
         key: _form,
         child: Container(
           margin: EdgeInsets.all(16),
