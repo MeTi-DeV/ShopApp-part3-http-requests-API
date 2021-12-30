@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/product.dart';
 import '../providers/products.dart';
 
@@ -75,8 +76,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _isInstate = false;
     super.didChangeDependencies();
   }
-
-  void _saveForm() {
+//comment 1 :inside _saveForm will pass data to server so use async
+  void _saveForm() async {
     final isSave = _form.currentState!.validate();
     if (!isSave) {
       return;
@@ -93,10 +94,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
       Provider.of<Products>(context, listen: false)
           .updateProduct(_editProduct.id, _editProduct);
     } else {
-      Provider.of<Products>(context, listen: false)
-          .addProducts(_editProduct)
-          .catchError((error) {
-        return showDialog<Null>(
+      //comment 2 : use try for codes will be resived by server
+      try {
+        //comment 3 : and use await for function that app wait for that till resive by server
+         //and if that don't executed catch(error) will execute
+        // and other codes don't applied to the app
+        await Provider.of<Products>(context, listen: false)
+            .addProducts(_editProduct);
+      } catch (error) {
+        showDialog<Null>(
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text('An error ocurred'),
@@ -109,8 +115,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
             ],
           ),
         );
-      }).then((_) {
-        Navigator.of(context).pop();
+      }
+      setState(() {
+        _isLoading = false;
       });
     }
   }

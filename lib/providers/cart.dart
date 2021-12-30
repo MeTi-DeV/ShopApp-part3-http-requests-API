@@ -64,6 +64,7 @@ class Cart with ChangeNotifier {
     _items = {};
     notifyListeners();
   }
+
 //comment 1 : create a new function for SnackBarAction()
   void removeRecentItem(String productId) {
     //comment 2 : here determined if there is not any item in cartitem list with this id do nothing
