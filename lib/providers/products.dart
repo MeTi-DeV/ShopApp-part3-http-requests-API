@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
-import 'product.dart';
-
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import 'product.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -52,40 +53,44 @@ class Products with ChangeNotifier {
     return _items.where((productItem) => productItem.isFavorite).toList();
   }
 
-  Future<void> addProducts(Product product) {
+//comment 1 : use async for functions that need to send data to server
+  Future<void> addProducts(Product product) async {
     final url = Uri.https(
         'flutter-shop-dfba5-default-rtdb.asia-southeast1.firebasedatabase.app',
         '/products');
+    //comment 2 : use try inside try all these codes will connect to firebase_database
+    try {
+      //comment 3 : await mean Async function  wait till these codes resive by server correctly
+      // and if them don't resived to server for any reason it will stop and catch() will
+      // execute show error
+      final response = await http.post(
+        url,
+        body: json.encode(
+          {
+            "title": product.title,
+            "price": product.price,
+            "description": product.description,
+            "imageUrl": product.imageUrl,
+            "isFavorite": product.isFavorite,
+          },
+        ),
+      );
+      final newProduct = Product(
+          id: json.decode(response.body)['name'],
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl);
 
-    return http
-        .post(
-      url,
-      body: json.encode(
-        {
-          "title": product.title,
-          "price": product.price,
-          "description": product.description,
-          "imageUrl": product.imageUrl,
-          "isFavorite": product.isFavorite,
-        },
-      ),
-    )
-        .then(
-      (response) {
-        final newProduct = Product(
-            id: json.decode(response.body)['name'],
-            title: product.title,
-            description: product.description,
-            price: product.price,
-            imageUrl: product.imageUrl);
-
-        _items.insert(0, newProduct);
-        notifyListeners();
-      },
-    ).catchError((error) {
+      _items.insert(0, newProduct);
+      notifyListeners();
+      //comment 4 : second part of try{} is catch(error) catch(error) is alternatives of catchError and from now on
+      // can usable instead of catchError()
+    } catch (error) {
       print(error);
+
       throw error;
-    });
+    }
   }
 
   void updateProduct(String id, Product newProduct) {

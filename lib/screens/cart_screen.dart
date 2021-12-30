@@ -17,7 +17,6 @@ class CartScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-         
           Expanded(
             child: ListView.builder(
               itemCount: cart.items.length,
@@ -32,7 +31,7 @@ class CartScreen extends StatelessWidget {
               ),
             ),
           ),
-           Card(
+          Card(
             margin: EdgeInsets.all(5),
             child: Padding(
               padding: EdgeInsets.all(8.0),

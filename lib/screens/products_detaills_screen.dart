@@ -20,9 +20,8 @@ class ProductsDetaillsScreen extends StatelessWidget {
           children: [
             Container(
               height: 300,
-              margin: EdgeInsets.symmetric(vertical:10, horizontal:15),
+              margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               child: ClipRRect(
-                
                 borderRadius: BorderRadius.circular(15),
                 child: Image.network(
                   loadProducts.imageUrl,
@@ -31,10 +30,23 @@ class ProductsDetaillsScreen extends StatelessWidget {
                 ),
               ),
             ),
-          Divider(),
-            Text(loadProducts.description , style:TextStyle(fontSize:22 , fontWeight: FontWeight.bold,), textAlign: TextAlign.center,
-            softWrap: true,),
-            Text('\$${loadProducts.price}' , style:TextStyle(fontSize:18 , fontWeight: FontWeight.bold, color:Colors.grey), textAlign: TextAlign.center,
+            Divider(),
+            Text(
+              loadProducts.description,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+              softWrap: true,
+            ),
+            Text(
+              '\$${loadProducts.price}',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

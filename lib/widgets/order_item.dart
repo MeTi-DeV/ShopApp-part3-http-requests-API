@@ -37,7 +37,7 @@ class _OrderItemState extends State<OrderItem> {
               icon: Icon(isShowMore ? Icons.expand_less : Icons.expand_more),
             ),
           ),
-           //comment 6 : this if statement is for show more details and use min() from dart:math for increase height of order details 
+          //comment 6 : this if statement is for show more details and use min() from dart:math for increase height of order details
           if (isShowMore)
             Container(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
@@ -49,7 +49,11 @@ class _OrderItemState extends State<OrderItem> {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(product.title , style:TextStyle(fontSize: 18 , fontWeight:FontWeight.bold),),
+                          Text(
+                            product.title,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                           Text(
                             '${product.quantity}x ${product.price} \$',
                             style: TextStyle(color: Colors.grey, fontSize: 18),

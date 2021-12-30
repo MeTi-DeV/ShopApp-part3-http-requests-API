@@ -22,7 +22,6 @@ class CartItem extends StatelessWidget {
             actions: [
               FlatButton(
                 color: null,
-               
                 onPressed: () => Navigator.of(ctx).pop(false),
                 child: Text(
                   'No',

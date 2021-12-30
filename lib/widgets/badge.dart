@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 //comment 1 : create this widget as Cart Badge on app Bar
 class Badge extends StatelessWidget {
   const Badge({
@@ -23,7 +24,6 @@ class Badge extends StatelessWidget {
           right: 8,
           top: 8,
           child: Container(
-            
             padding: EdgeInsets.all(2.0),
             // color: Theme.of(context).accentColor,
             decoration: BoxDecoration(
@@ -32,7 +32,6 @@ class Badge extends StatelessWidget {
               // color: color != null ? color : Theme.of(context).accentColor,
             ),
             constraints: BoxConstraints(
-              
               minWidth: 16,
               minHeight: 16,
             ),
