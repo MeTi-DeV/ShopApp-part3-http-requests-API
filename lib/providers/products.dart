@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'product.dart';
-//comment 1: after created account in Google Firebase add http package and set it as test database
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -39,6 +39,7 @@ class Products with ChangeNotifier {
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     ),
   ];
+
   List<Product> get items {
     return [..._items];
   }
@@ -51,12 +52,12 @@ class Products with ChangeNotifier {
     return _items.where((productItem) => productItem.isFavorite).toList();
   }
 
-Future<void> addProducts(Product product) {
-
+  Future<void> addProducts(Product product) {
     final url = Uri.https(
-        'shopapp-82387-default-rtdb.asia-southeast1.firebasedatabase.app', '/products.json');
+        'flutter-shop-dfba5-default-rtdb.asia-southeast1.firebasedatabase.app',
+        '/products');
 
-  return  http
+    return http
         .post(
       url,
       body: json.encode(
@@ -68,9 +69,7 @@ Future<void> addProducts(Product product) {
           "isFavorite": product.isFavorite,
         },
       ),
-      
     )
-
         .then(
       (response) {
         final newProduct = Product(
@@ -83,7 +82,10 @@ Future<void> addProducts(Product product) {
         _items.insert(0, newProduct);
         notifyListeners();
       },
-    );
+    ).catchError((error) {
+      print(error);
+      throw error;
+    });
   }
 
   void updateProduct(String id, Product newProduct) {
