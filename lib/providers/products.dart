@@ -53,16 +53,22 @@ class Products with ChangeNotifier {
     return _items.where((productItem) => productItem.isFavorite).toList();
   }
 
-//comment 1 : use async for functions that need to send data to server
+//comment 1 : here define async fetch function
+  Future<void> fetchAndSetProducts() async {
+    final url = Uri.parse(
+        'https://flutter-shop-b4316-default-rtdb.asia-southeast1.firebasedatabase.app/');
+    try {
+      final response = await http.get(url);
+    } catch (error) {
+      throw (error);
+    }
+  }
+
   Future<void> addProducts(Product product) async {
     final url = Uri.https(
-        'flutter-shop-dfba5-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/products');
-    //comment 2 : use try inside try all these codes will connect to firebase_database
+        'flutter-shop-b4316-default-rtdb.asia-southeast1.firebasedatabase.app',
+        '/products.json');
     try {
-      //comment 3 : await mean Async function  wait till these codes resive by server correctly
-      // and if them don't resived to server for any reason it will stop and catch() will
-      // execute show error
       final response = await http.post(
         url,
         body: json.encode(
@@ -84,8 +90,6 @@ class Products with ChangeNotifier {
 
       _items.insert(0, newProduct);
       notifyListeners();
-      //comment 4 : second part of try{} is catch(error) catch(error) is alternatives of catchError and from now on
-      // can usable instead of catchError()
     } catch (error) {
       print(error);
 

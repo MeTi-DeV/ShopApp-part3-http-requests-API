@@ -76,7 +76,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _isInstate = false;
     super.didChangeDependencies();
   }
-//comment 1 :inside _saveForm will pass data to server so use async
+
   void _saveForm() async {
     final isSave = _form.currentState!.validate();
     if (!isSave) {
@@ -88,17 +88,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading = true;
     });
     if (_editProduct.id != '') {
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editProduct.id, _editProduct);
       setState(() {
         _isLoading = false;
       });
-      Provider.of<Products>(context, listen: false)
-          .updateProduct(_editProduct.id, _editProduct);
+
+      Navigator.of(context).pop();
     } else {
-      //comment 2 : use try for codes will be resived by server
+
       try {
-        //comment 3 : and use await for function that app wait for that till resive by server
-         //and if that don't executed catch(error) will execute
-        // and other codes don't applied to the app
+       
         await Provider.of<Products>(context, listen: false)
             .addProducts(_editProduct);
       } catch (error) {
@@ -119,6 +119,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       setState(() {
         _isLoading = false;
       });
+      Navigator.of(context).pop();
     }
   }
 
