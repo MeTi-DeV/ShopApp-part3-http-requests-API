@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/providers/products.dart';
 import '../providers/cart.dart';
 import 'package:provider/provider.dart';
 import '../widgets/product_grid.dart';
@@ -14,6 +15,25 @@ class OverviewProductsScreen extends StatefulWidget {
 
 class _OverviewProductsScreenState extends State<OverviewProductsScreen> {
   var _selectFavorite = false;
+  var _isinitState = true;
+  @override
+  //comment 1 : we can use our fetch data function here as initState for in state we can call peovide function with listen:false
+  //and Futere.Deleyed but there is an other ways
+// void initState() {
+//   super.initState();
+//   Provider.of<Products>(context , listen: false).fetchAndSetProducts();
+//   Future.delayed(Duration.zero).then((_){
+//     Provider.of<Products>(context).fetchAndSetProducts()
+//   });
+// }
+//comment 2 : at later used didChangeDependencies it's an other way to call fetch function
+  void didChangeDependencies() {
+    if (_isinitState) {
+      Provider.of<Products>(context).fetchAndSetProducts();
+    }
+    _isinitState = false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
