@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:my_shop/providers/products.dart';
-import '../providers/cart.dart';
 import 'package:provider/provider.dart';
-import '../widgets/product_grid.dart';
+
+import '../providers/cart.dart';
 import '../widgets/badge.dart';
 import '../widgets/main_drawer.dart';
+import '../widgets/product_grid.dart';
 
 enum FavoriteOptions { All, Favorite }
 
@@ -16,20 +17,19 @@ class OverviewProductsScreen extends StatefulWidget {
 class _OverviewProductsScreenState extends State<OverviewProductsScreen> {
   var _selectFavorite = false;
   var _isinitState = true;
-  @override
-  //comment 1 : we can use our fetch data function here as initState for in state we can call peovide function with listen:false
-  //and Futere.Deleyed but there is an other ways
-// void initState() {
-//   super.initState();
-//   Provider.of<Products>(context , listen: false).fetchAndSetProducts();
-//   Future.delayed(Duration.zero).then((_){
-//     Provider.of<Products>(context).fetchAndSetProducts()
-//   });
-// }
-//comment 2 : at later used didChangeDependencies it's an other way to call fetch function
+  var _isLaoding = false;
   void didChangeDependencies() {
+    //comment 1 : before response  loading spinner have to be
     if (_isinitState) {
-      Provider.of<Products>(context).fetchAndSetProducts();
+      setState(() {
+        _isLaoding = true;
+      });
+      //comment 2 : after execution set it as flase
+      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
+        setState(() {
+          _isLaoding = false;
+        });
+      });
     }
     _isinitState = false;
     super.didChangeDependencies();
@@ -73,7 +73,13 @@ class _OverviewProductsScreenState extends State<OverviewProductsScreen> {
         ],
         title: Text('Shop App'),
       ),
-      body: ProductGrid(_selectFavorite),
+      body: _isLaoding
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Colors.pinkAccent,
+              ),
+            )
+          : ProductGrid(_selectFavorite),
     );
   }
 }
