@@ -58,14 +58,11 @@ class Products with ChangeNotifier {
         'https://flutter-shop-b4316-default-rtdb.asia-southeast1.firebasedatabase.app/products.json');
     try {
       final response = await http.get(url);
-      //comment 1 : now response fetched data
-      // our data is as Map so decode that data
+
       final extractedProducts =
           jsonDecode(response.body) as Map<String, dynamic>;
-      //comment 2 : and store these extracted Map data as list
       final List<Product> loadedProducts = [];
-      //comment 3 : here as each Map we create a new product and storage in our list prodId(key)
-      // is each product map  specific Id
+
       extractedProducts.forEach((prodId, prodData) {
         loadedProducts.insert(
           0,
@@ -78,7 +75,6 @@ class Products with ChangeNotifier {
           ),
         );
       });
-      //comment  4 : at last put all data to origin product list in app , it's _items and call notifyListeners
       _items = loadedProducts;
       notifyListeners();
     } catch (error) {
@@ -118,11 +114,21 @@ class Products with ChangeNotifier {
       throw error;
     }
   }
-
-  void updateProduct(String id, Product newProduct) {
+//comment 1 : time to fetch data and update products
+  Future<void> updateProduct(String id, Product newProduct) async {
     final proIndex = items.indexWhere((prod) => prod.id == id);
-
     if (proIndex >= 0) {
+      //comment 2 : it's define our url as Uri it is important to add https:// at first and $id.json at last
+      final Uri url = Uri.parse(
+          'https://flutter-shop-b4316-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+//comment 3 : push upadted vlues as body of request
+      await http.patch(url,
+          body: json.encode({
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'imageUrl': newProduct.imageUrl,
+            'price': newProduct.price,
+          }));
       _items[proIndex] = newProduct;
       print(proIndex);
       notifyListeners();
@@ -130,8 +136,13 @@ class Products with ChangeNotifier {
       print('...');
     }
   }
-
-  void removeProduct(String id) {
+//comment 4 : for delete product can use this function
+  Future<void> removeProduct(String id) async {
+    // define url like update function an after call delete method for delete product
+    // there is better way to do this behavior I use it in next branch and I will explain that later
+    final Uri url = Uri.parse(
+        'https://flutter-shop-b4316-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+    http.delete(url);
     _items.removeWhere((product) => product.id == id);
     notifyListeners();
   }
