@@ -114,14 +114,12 @@ class Products with ChangeNotifier {
       throw error;
     }
   }
-//comment 1 : time to fetch data and update products
+
   Future<void> updateProduct(String id, Product newProduct) async {
     final proIndex = items.indexWhere((prod) => prod.id == id);
     if (proIndex >= 0) {
-      //comment 2 : it's define our url as Uri it is important to add https:// at first and $id.json at last
       final Uri url = Uri.parse(
           'https://flutter-shop-b4316-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
-//comment 3 : push upadted vlues as body of request
       await http.patch(url,
           body: json.encode({
             'title': newProduct.title,
@@ -136,14 +134,27 @@ class Products with ChangeNotifier {
       print('...');
     }
   }
-//comment 4 : for delete product can use this function
+
+//comment 1 : other way to delete an item is to catch that item to memory because if an error occurred can get back that product to item list
   Future<void> removeProduct(String id) async {
-    // define url like update function an after call delete method for delete product
-    // there is better way to do this behavior I use it in next branch and I will explain that later
+    //comment 2 : like other requests define url for connect to web service
     final Uri url = Uri.parse(
         'https://flutter-shop-b4316-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
-    http.delete(url);
-    _items.removeWhere((product) => product.id == id);
+        //comment 3 : define existingProdctIndex to find product index in our product list as int number
+    final existingProdctIndex = _items.indexWhere((prod) => prod.id == id);
+    //comment 4 : after put that product in variable as Product class value
+    Product? existingProduct = _items[existingProdctIndex];
+    //comment 5 : and after call http.delete method and use .then() to clear that product and put existingProduct to null
+    http.delete(url).then((response) {
+      existingProduct = null;
+      //comment 6 : if any error occurred because we choose this way to delete and porducts are catched in memory if any error occurred we can 
+      //get back that to our list by codes in below in catchError
+    }).catchError((_) {
+      _items.insert(existingProdctIndex, existingProduct!);
+      notifyListeners();
+    });
+    //comment 7 : if there was't any error its time to delete product from our app memory
+    _items.removeAt(existingProdctIndex);
     notifyListeners();
   }
 }
