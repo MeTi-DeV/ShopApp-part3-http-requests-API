@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_shop/providers/products.dart';
+
 import 'package:provider/provider.dart';
+import 'package:shop_app/providers/products.dart';
 
 import '../providers/cart.dart';
 import '../widgets/badge.dart';
@@ -19,12 +20,11 @@ class _OverviewProductsScreenState extends State<OverviewProductsScreen> {
   var _isinitState = true;
   var _isLaoding = false;
   void didChangeDependencies() {
-    //comment 1 : before response  loading spinner have to be
     if (_isinitState) {
       setState(() {
         _isLaoding = true;
       });
-      //comment 2 : after execution set it as flase
+
       Provider.of<Products>(context).fetchAndSetProducts().then((_) {
         setState(() {
           _isLaoding = false;
