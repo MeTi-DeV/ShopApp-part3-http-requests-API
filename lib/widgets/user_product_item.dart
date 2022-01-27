@@ -10,6 +10,8 @@ class UserProductItem extends StatelessWidget {
   UserProductItem(this.title, this.imageUrl, this.id);
   @override
   Widget build(BuildContext context) {
+    //comment 1 : because we can't use of(context) here define it as scaffold variabl
+    final scaffold=Scaffold.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
       child: ListTile(
@@ -27,8 +29,17 @@ class UserProductItem extends StatelessWidget {
                 icon: Icon(Icons.edit),
               ),
               IconButton(
-                onPressed: () => Provider.of<Products>(context, listen: false)
-                    .removeProduct(id),
+                //comment 1 : here I want to show error connection to my user as SnackBar
+                onPressed: () async{
+                  try {
+                 await   Provider.of<Products>(context, listen: false)
+                        .removeProduct(id);
+                  } catch (error) {
+                    
+scaffold.showSnackBar(SnackBar(content: Text('Remove Product was Faild')));
+                  }
+                  ;
+                },
                 icon: Icon(
                   Icons.delete,
                   color: Theme.of(context).errorColor,

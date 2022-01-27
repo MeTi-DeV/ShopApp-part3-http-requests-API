@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_app/models/http_exception.dart';
 
 import 'product.dart';
 
@@ -135,26 +136,22 @@ class Products with ChangeNotifier {
     }
   }
 
-//comment 1 : other way to delete an item is to catch that item to memory because if an error occurred can get back that product to item list
   Future<void> removeProduct(String id) async {
-    //comment 2 : like other requests define url for connect to web service
     final Uri url = Uri.parse(
         'https://flutter-shop-b4316-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
-        //comment 3 : define existingProdctIndex to find product index in our product list as int number
     final existingProdctIndex = _items.indexWhere((prod) => prod.id == id);
-    //comment 4 : after put that product in variable as Product class value
     Product? existingProduct = _items[existingProdctIndex];
-    //comment 5 : and after call http.delete method and use .then() to clear that product and put existingProduct to null
-    http.delete(url).then((response) {
-      existingProduct = null;
-      //comment 6 : if any error occurred because we choose this way to delete and porducts are catched in memory if any error occurred we can 
-      //get back that to our list by codes in below in catchError
-    }).catchError((_) {
-      _items.insert(existingProdctIndex, existingProduct!);
-      notifyListeners();
-    });
-    //comment 7 : if there was't any error its time to delete product from our app memory
     _items.removeAt(existingProdctIndex);
     notifyListeners();
+    final response = await http.delete(url);
+  //comment 1 :for PATCH , DELETE , PUT  connection error occurred with statusCode more than 400
+          // for these errors we should get to previous data
+    if (response.statusCode >= 400) {
+      _items.insert(existingProdctIndex, existingProduct);
+      notifyListeners();
+      //comment 2 : here call HttpException that created and it's throw if any error occurre
+      throw HttpException('Could not delete product');
+    }
+    existingProduct = null;
   }
 }
