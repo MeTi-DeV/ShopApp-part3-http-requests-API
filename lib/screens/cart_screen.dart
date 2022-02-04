@@ -53,26 +53,57 @@ class CartScreen extends StatelessWidget {
                     ),
                   ),
                   Spacer(),
-                  RaisedButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushReplacementNamed(OrdersScreen.routeName);
-                      orderData.addToOrder(
-                          cart.items.values.toList(), cart.totalAmount);
-                      cart.CartClear();
-                    },
-                    child: Text('Add To Order',
-                        style: TextStyle(color: Colors.white)),
-                    color: Colors.teal.shade700,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  )
+                  OrderButton(orderData: orderData, cart: cart)
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+//comment 1 : extract button to stateFull widget to disable it while order screen is
+//empty and use CircularProgressIndicator for while data is syncing to webservice
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key? key,
+    required this.orderData,
+    required this.cart,
+  }) : super(key: key);
+
+  final Order orderData;
+  final Cart cart;
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  var _isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return RaisedButton(
+      onPressed: widget.cart.totalAmount <= 0 ||_isLoading
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+
+              await widget.orderData.addToOrder(
+                widget.cart.items.values.toList(),
+                widget.cart.totalAmount,
+              );
+              setState(() {
+                _isLoading=false;
+              });
+              widget.cart.CartClear();
+            },
+      child:_isLoading?CircularProgressIndicator(): Text('Add To Order', style: TextStyle(color: Colors.white)),
+      color: Colors.teal.shade700,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
       ),
     );
   }

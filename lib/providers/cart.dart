@@ -65,13 +65,10 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-//comment 1 : create a new function for SnackBarAction()
   void removeRecentItem(String productId) {
-    //comment 2 : here determined if there is not any item in cartitem list with this id do nothing
     if (!_items.containsKey(productId)) {
       return;
     }
-    // comment 3 : here determined if there is a item in cart list with this id decrease just one count of that in cartitem list
     if (_items[productId]!.quantity > 1) {
       _items.update(
           productId,
@@ -81,7 +78,6 @@ class Cart with ChangeNotifier {
               price: existingItem.price,
               quantity: existingItem.quantity - 1));
     } else {
-      //comment 4 : here determined if there is just a count of this product by this id delete that from my cart
       _items.remove(productId);
     }
     notifyListeners();

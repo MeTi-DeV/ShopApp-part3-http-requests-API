@@ -144,12 +144,9 @@ class Products with ChangeNotifier {
     _items.removeAt(existingProdctIndex);
     notifyListeners();
     final response = await http.delete(url);
-  //comment 1 :for PATCH , DELETE , PUT  connection error occurred with statusCode more than 400
-          // for these errors we should get to previous data
     if (response.statusCode >= 400) {
       _items.insert(existingProdctIndex, existingProduct);
       notifyListeners();
-      //comment 2 : here call HttpException that created and it's throw if any error occurre
       throw HttpException('Could not delete product');
     }
     existingProduct = null;

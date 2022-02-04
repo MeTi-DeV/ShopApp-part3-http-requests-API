@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import './cart.dart';
+import 'package:http/http.dart' as http;
 
-//comment 1 : create order provider for save data and pass different parameters and show user orders
 class OrderItem {
   final String id;
   final double amount;
@@ -14,21 +16,37 @@ class OrderItem {
       required this.products});
 }
 
-//comment 2 : here create orders list
 class Order with ChangeNotifier {
   List<OrderItem> _orders = [];
   List<OrderItem> get orders {
     return [..._orders];
   }
-
-//comment 3 : create addToOrder  a function for put all cart items to OrdersScreen
-// and show total amout and dateTime of create order
-//first argument get our cart data and second argument get total amount
-  void addToOrder(List<CartItem> cartProducts, double total) {
+//comment 1 : add orders to web service
+  Future<void> addToOrder(List<CartItem> cartProducts, double total) async {
+    final url = Uri.https(
+        'flutter-shop-b4316-default-rtdb.asia-southeast1.firebasedatabase.app',
+        '/orders.json');
+        //comment 2 : define a variable to get dateTime.now() and we have a one type of time for app and web service
+    final stampTime = DateTime.now().toIso8601String();
+    //comment 3 : next step post data to web service like product
+    final response = await http.post(url,
+        body: json.encode({
+          'amount': total,
+          'time': stampTime,
+          //comment 4 : pass product data as lis of data to webservice
+          'products': cartProducts
+              .map((cp) => {
+                    'id': cp.id,
+                    'title': cp.title,
+                    'quantity': cp.quantity,
+                    'price': cp.price,
+                  })
+              .toList()
+        }));
     _orders.insert(
       0,
       OrderItem(
-          id: DateTime.now().toString(),
+          id: json.decode(response.body)['name'],
           amount: total,
           time: DateTime.now(),
           products: cartProducts),

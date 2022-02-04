@@ -15,40 +15,42 @@ class ProductsDetaillsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(loadProducts.title),
       ),
-      body: Container(
-        child: Column(
-          children: [
-            Container(
-              height: 300,
-              margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image.network(
-                  loadProducts.imageUrl,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: [
+              Container(
+                height: 300,
+                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.network(
+                    loadProducts.imageUrl,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  ),
                 ),
               ),
-            ),
-            Divider(),
-            Text(
-              loadProducts.description,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-              softWrap: true,
-            ),
-            Text(
-              '\$${loadProducts.price}',
-              style: TextStyle(
-                  fontSize: 18,
+              Divider(),
+              Text(
+                loadProducts.description,
+                style: TextStyle(
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-          ],
+                ),
+                textAlign: TextAlign.center,
+                softWrap: true,
+              ),
+              Text(
+                '\$${loadProducts.price}',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
