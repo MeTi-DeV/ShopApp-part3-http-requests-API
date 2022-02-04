@@ -63,8 +63,7 @@ class CartScreen extends StatelessWidget {
     );
   }
 }
-//comment 1 : extract button to stateFull widget to disable it while order screen is
-//empty and use CircularProgressIndicator for while data is syncing to webservice
+
 class OrderButton extends StatefulWidget {
   const OrderButton({
     Key? key,
